@@ -12,6 +12,7 @@ See the roadmap below for planned feature support:
 * Clusterable (v0.2)
 * Cluster transactions (v0.2)
 * Transactor ACI(+D) (v0.2)
+* MQ Replication (Kafka) (v0.2)
 * Multiple key-value stores (v0.3)
 * Schema and schema-versioning (v0.3)
 * Embeddable (for Scala, Java or Python) (v0.4)
