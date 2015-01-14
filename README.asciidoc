@@ -54,10 +54,10 @@ Loading consoleImports...
 import org.joda.time._
 import scala.concurrent._
 import s_mach.concurrent._
-import net.s_mach.aeondb._
+import s_mach.aeondb._
 import scala.concurrent.ExecutionContext.Implicits.global
-m: net.s_mach.aeondb.Metadata = Metadata(me,None,2015-01-02T21:33:58.373Z)
-p: net.s_mach.aeondb.LocalDiffMap[Int,String,Option[String]] = net.s_mach.aeondb.LocalDiffMap@4579d397
+m: s_mach.aeondb.Metadata = Metadata(me,None,2015-01-02T21:33:58.373Z)
+p: s_mach.aeondb.LocalDiffMap[Int,String,Option[String]] = s_mach.aeondb.LocalDiffMap@4579d397
 t1: org.joda.time.Instant = 2015-01-02T21:33:59.158Z
 
 scala> p.now.toMap.get
@@ -124,10 +124,10 @@ Loading consoleImports...
 import org.joda.time._
 import scala.concurrent._
 import s_mach.concurrent._
-import net.s_mach.aeondb._
+import s_mach.aeondb._
 import scala.concurrent.ExecutionContext.Implicits.global
-m: net.s_mach.aeondb.Metadata = Metadata(me,None,2015-01-04T06:00:05.886Z)
-p: net.s_mach.aeondb.LocalDiffMap[Int,String,Option[String]] = net.s_mach.aeondb.LocalDiffMap@2e2384bd
+m: s_mach.aeondb.Metadata = Metadata(me,None,2015-01-04T06:00:05.886Z)
+p: s_mach.aeondb.LocalDiffMap[Int,String,Option[String]] = s_mach.aeondb.LocalDiffMap@2e2384bd
 t1: org.joda.time.Instant = 2015-01-04T06:00:07.108Z
 
 scala> :paste
@@ -171,10 +171,10 @@ Loading consoleImports...
 import org.joda.time._
 import scala.concurrent._
 import s_mach.concurrent._
-import net.s_mach.aeondb._
+import s_mach.aeondb._
 import scala.concurrent.ExecutionContext.Implicits.global
-m: net.s_mach.aeondb.Metadata = Metadata(me,None,2015-01-04T06:02:32.401Z)
-p: net.s_mach.aeondb.LocalDiffMap[Int,String,Option[String]] = net.s_mach.aeondb.LocalDiffMap@2c20acdf
+m: s_mach.aeondb.Metadata = Metadata(me,None,2015-01-04T06:02:32.401Z)
+p: s_mach.aeondb.LocalDiffMap[Int,String,Option[String]] = s_mach.aeondb.LocalDiffMap@2c20acdf
 t1: org.joda.time.Instant = 2015-01-04T06:02:33.054Z
 
 scala> p.now.put(3,"c").get
@@ -184,7 +184,7 @@ scala> p.now.toMap.get
 res1: Map[Int,String] = Map(2 -> b, 1 -> a, 3 -> c)
 
 scala> val p2 = p.now.checkout(_ == 3).get
-p2: net.s_mach.aeondb.PersistentMap[Int,String,Option[String]] = net.s_mach.aeondb.LocalDiffMap@33ab4788
+p2: s_mach.aeondb.PersistentMap[Int,String,Option[String]] = s_mach.aeondb.LocalDiffMap@33ab4788
 
 scala> p2.now.toMap.get
 res2: Map[Int,String] = Map(3 -> c)
