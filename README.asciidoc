@@ -25,6 +25,7 @@ features. v0.1 implements the following features:
 See the roadmap below for planned feature support:
 
 * Clusterable (v0.2)
+* Time-bound transactions (v0.2)
 * Cluster transactions (v0.2)
 * Transactor ACI(+D) (v0.2)
 * MQ Replication (Kafka) (v0.2)
