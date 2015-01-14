@@ -19,7 +19,6 @@
 package s_mach.aeondb.impl
 
 import s_mach.aeondb._
-import s_mach.aeondb.diffmap.Commit
 
 class CommitBuilder[A,B,PB] {
   private[this] val _checkout = Map.newBuilder[A,Long]

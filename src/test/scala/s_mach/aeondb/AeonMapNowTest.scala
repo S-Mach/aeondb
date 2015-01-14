@@ -20,13 +20,13 @@ package s_mach.aeondb
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import org.scalatest.{FlatSpec, Matchers}
-import s_mach.aeondb.impl.LocalDiffMap
+import s_mach.aeondb.impl.AeonMapImpl
 import s_mach.concurrent._
 
 class AeonMapNowTest extends FlatSpec with Matchers {
   "AeonMapTest" must "convert now toMap" in {
     val m = Map(1 -> "a", 2 -> "b")
-    val p = LocalDiffMap(m.toSeq:_*)
+    val p = AeonMap(m.toSeq:_*)
     p.now.toMap.get should equal(m)
   }
 }

@@ -19,15 +19,51 @@
 package s_mach.aeondb
 
 import org.joda.time.Instant
+import s_mach.aeondb.impl.AeonMapImpl
+import s_mach.datadiff.DataDiff
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait AeonMap[A,B] {
+object AeonMap {
+  sealed trait Event[A,B,PB]
+  case class OnCommit[A,B,PB](
+    oomCommit: List[(Commit[A,B,PB],Metadata)]
+  ) extends Event[A,B,PB]
+
+  sealed trait Error[+A] extends Exception
+  case class KeyNotFoundError[+A](oomKeyNotFound: Iterable[A]) extends Error[A]
+  case class EmptyCommitError() extends Error[Nothing]
+
+  case class VersionMismatch[+A](key: A, expectedVersion: Long, version: Long)
+
+  sealed trait MergeError[+A] extends Error[A]
+  case class MergeConflictError[+A](oomMergeConflict: Iterable[VersionMismatch[A]]) extends MergeError[A]
+
+  sealed trait CommitError[+A] extends Error[A]
+
+  sealed trait PutError[+A] extends Error[A]
+  case class KeyAlreadyExists[+A](key: A) extends PutError[A]
+
+  def apply[A,B,PB](
+    kv: (A,B)*
+  )(implicit
+    dataDiff:DataDiff[B,PB],
+    ec:ExecutionContext
+  ) : AeonMap[A,B,PB] =
+    AeonMapImpl(kv:_*)
+}
+
+trait AeonMap[A,B,PB] {
+  import AeonMap._
+
+  implicit def dataDiff:DataDiff[B,PB]
 
   trait OldMoment extends Moment[A,B] {
     override def filterKeys(f: (A) => Boolean): OldMoment
 
     def aeon: Aeon
+
+    def checkout() : Future[AeonMap[A,B,PB]]
   }
 
   trait NowMoment extends OldMoment {
@@ -55,6 +91,25 @@ trait AeonMap[A,B] {
 
     // def append[C](key: A, value: C)(implicit monoid: Monoid[B[C]])
     // def put(value: B)(implicit uuidGen:UUIDGenerator[A])
+
+    def commit(
+      checkout: Checkout[A],
+      oomCommit: List[(Commit[A,B,PB],Metadata)]
+    ) : Future[Boolean]
+
+    def commitFold[X](
+      f: Moment[A,B] => Future[(Checkout[A],List[(Commit[A,B,PB],Metadata)],X)],
+      g: Exception => X
+    ) : Future[X]
+
+    def merge(
+      other: AeonMap[A,B,PB]
+    )(implicit metadata: Metadata) : Future[Boolean]
+
+    def mergeFold[X](
+      f: Moment[A,B] => Future[(AeonMap[A,B,PB],X)],
+      g: Exception => X
+    )(implicit metadata: Metadata) : Future[X]
   }
 
   trait FutureMoment {
@@ -75,4 +130,9 @@ trait AeonMap[A,B] {
   def future(
     f: FutureMoment => Future[FutureMoment]
   )(implicit metadata:Metadata) : Future[Boolean]
+
+  def zomCommit: Future[List[(Commit[A,B,PB], Metadata)]]
+
+  protected def emitEvents : Boolean = false
+  protected def onEvent(e: AeonMap.Event[A,B,PB]) : Unit = { }
 }

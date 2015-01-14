@@ -16,7 +16,7 @@
           .L1 1tt1ttt,,Li
             ...1LLLL...
 */
-package s_mach.aeondb.diffmap
+package s_mach.aeondb
 
 case class Commit[A,+B,+PB](
   put: Map[A,B] = Map.empty[A,B],

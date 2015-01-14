@@ -25,15 +25,14 @@ import s_mach.concurrent._
 import s_mach.datadiff._
 import org.joda.time.Instant
 import s_mach.aeondb._
-import s_mach.aeondb.diffmap.{DiffMap, Commit}
 
-object LocalDiffMap {
+object AeonMapImpl {
   def apply[A,B,PB](kv:(A,B)*)(implicit
     ec: ExecutionContext,
     dataDiff:DataDiff[B,PB]
-    ) : LocalDiffMap[A,B,PB] = {
+    ) : AeonMapImpl[A,B,PB] = {
     val now = Instant.now()
-    new LocalDiffMap[A,B,PB](
+    new AeonMapImpl[A,B,PB](
       _baseAeon = Aeon(now,now),
       _baseState = MaterializedMoment(kv:_*),
       zomBaseCommit = Nil
@@ -41,15 +40,15 @@ object LocalDiffMap {
   }
 }
 
-class LocalDiffMap[A,B,PB](
+class AeonMapImpl[A,B,PB](
   _baseAeon: Aeon,
   _baseState: MaterializedMoment[A,B] = MaterializedMoment.empty[A,B],
   zomBaseCommit: List[(List[Commit[A,B,PB]],Metadata)]
 )(implicit
   val executionContext: ExecutionContext,
   val dataDiff:DataDiff[B,PB]
-) extends DiffMap[A,B,PB] { self =>
-  import DiffMap._
+) extends AeonMap[A,B,PB] { self =>
+  import AeonMap._
 
   type SuperOldMoment = super.OldMoment
   type SuperNowMoment = super.NowMoment
@@ -94,11 +93,11 @@ class LocalDiffMap[A,B,PB](
     def oomCommit: List[(Commit[A,B,PB],Metadata)]
     def local: LocalMoment[A,B]
 
-    override def checkout(): Future[LocalDiffMap[A,B,PB]] = {
+    override def checkout(): Future[AeonMapImpl[A,B,PB]] = {
       val now = Instant.now()
       val materializedMoment = local.materialize
       Future.successful {
-        new LocalDiffMap(
+        new AeonMapImpl(
           _baseAeon = aeon,
           _baseState = materializedMoment,
           zomBaseCommit = Nil
@@ -462,7 +461,7 @@ class LocalDiffMap[A,B,PB](
 
 
     override def merge(
-      other: DiffMap[A,B,PB]
+      other: AeonMap[A,B,PB]
     )(implicit metadata: Metadata) : Future[Boolean] = {
       mergeFold(
         f = { _ => (other,true).future },
@@ -471,7 +470,7 @@ class LocalDiffMap[A,B,PB](
     }
 
     override def mergeFold[X](
-      f: Moment[A,B] => Future[(DiffMap[A,B,PB],X)],
+      f: Moment[A,B] => Future[(AeonMap[A,B,PB],X)],
       g: Exception => X
     )(implicit metadata: Metadata) : Future[X] = {
       def loop() : Future[X] = {
@@ -519,7 +518,7 @@ class LocalDiffMap[A,B,PB](
       loop()
     }
 
-    override def checkout(): Future[LocalDiffMap[A,B,PB]] = oldMoment.checkout()
+    override def checkout(): Future[AeonMapImpl[A,B,PB]] = oldMoment.checkout()
   }
 
   def publishEvents() : Unit = {
