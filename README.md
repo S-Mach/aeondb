@@ -7,6 +7,7 @@ AeonDB v0.1 is currently a prototype and does not fufill all of its proposed fea
 * Embeddable (for Scala only) (v0.1)
 * Local transactions ACI(-D) (v0.1)
 * Time-ordered commit event stream (v0.1)
+
 See the roadmap below for planned feature support:
 * Clusterable (v0.2)
 * Cluster transactions (v0.2)
