@@ -30,7 +30,7 @@ features. v0.1 implements the following features:
 * Time-ordered commit event stream (v0.1)
 * Full history for any value (v0.1) [In Progress]
 
-See the roadmap below for planned feature support:
+Roadmap for planned feature support:
 
 * Clusterable (v0.2)
 * Time-bound transactions (v0.2)
