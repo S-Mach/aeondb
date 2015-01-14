@@ -20,7 +20,7 @@ package net.s_mach
 
 import org.joda.time.Instant
 
-package object aeon {
+package object aeondb {
 
   val beginOfTime = new Instant(0)
   val endOfTime = new Instant(Long.MaxValue)
