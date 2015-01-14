@@ -17,7 +17,7 @@ user-supplied timestamp
 * Changes are stored as a commit event stream
 * Use git-style checkout to rebase and copy a portion of the data and make local
 changes
-* Use git-style merge to replay commits to another persistent map (see example 3
+* Use git-style merge to replay commits to another LocalDiffMap (see example 3
 below)
 * Full record of changes can be retrieved per item (not implemented yet)
 
@@ -55,10 +55,10 @@ Loading consoleImports...
 import org.joda.time._
 import scala.concurrent._
 import s_mach.concurrent._
-import org.lancegatlin.persist._
+import net.s_mach.aeondb._
 import scala.concurrent.ExecutionContext.Implicits.global
-m: org.lancegatlin.persist.Metadata = Metadata(me,None,2015-01-02T21:33:58.373Z)
-p: org.lancegatlin.persist.PersistentMemoryMap[Int,String,Option[String]] = org.lancegatlin.persist.PersistentMemoryMap@4579d397
+m: net.s_mach.aeondb.Metadata = Metadata(me,None,2015-01-02T21:33:58.373Z)
+p: net.s_mach.aeondb.LocalDiffMap[Int,String,Option[String]] = net.s_mach.aeondb.LocalDiffMap@4579d397
 t1: org.joda.time.Instant = 2015-01-02T21:33:59.158Z
 
 scala> p.now.toMap.get
@@ -125,10 +125,10 @@ Loading consoleImports...
 import org.joda.time._
 import scala.concurrent._
 import s_mach.concurrent._
-import org.lancegatlin.persist._
+import net.s_mach.aeondb._
 import scala.concurrent.ExecutionContext.Implicits.global
-m: org.lancegatlin.persist.Metadata = Metadata(me,None,2015-01-04T06:00:05.886Z)
-p: org.lancegatlin.persist.PersistentMemoryMap[Int,String,Option[String]] = org.lancegatlin.persist.PersistentMemoryMap@2e2384bd
+m: net.s_mach.aeondb.Metadata = Metadata(me,None,2015-01-04T06:00:05.886Z)
+p: net.s_mach.aeondb.LocalDiffMap[Int,String,Option[String]] = net.s_mach.aeondb.LocalDiffMap@2e2384bd
 t1: org.joda.time.Instant = 2015-01-04T06:00:07.108Z
 
 scala> :paste
@@ -172,10 +172,10 @@ Loading consoleImports...
 import org.joda.time._
 import scala.concurrent._
 import s_mach.concurrent._
-import org.lancegatlin.persist._
+import net.s_mach.aeondb._
 import scala.concurrent.ExecutionContext.Implicits.global
-m: org.lancegatlin.persist.Metadata = Metadata(me,None,2015-01-04T06:02:32.401Z)
-p: org.lancegatlin.persist.PersistentMemoryMap[Int,String,Option[String]] = org.lancegatlin.persist.PersistentMemoryMap@2c20acdf
+m: net.s_mach.aeondb.Metadata = Metadata(me,None,2015-01-04T06:02:32.401Z)
+p: net.s_mach.aeondb.LocalDiffMap[Int,String,Option[String]] = net.s_mach.aeondb.LocalDiffMap@2c20acdf
 t1: org.joda.time.Instant = 2015-01-04T06:02:33.054Z
 
 scala> p.now.put(3,"c").get
@@ -185,7 +185,7 @@ scala> p.now.toMap.get
 res1: Map[Int,String] = Map(2 -> b, 1 -> a, 3 -> c)
 
 scala> val p2 = p.now.checkout(_ == 3).get
-p2: org.lancegatlin.persist.PersistentMap[Int,String,Option[String]] = org.lancegatlin.persist.PersistentMemoryMap@33ab4788
+p2: net.s_mach.aeondb.PersistentMap[Int,String,Option[String]] = net.s_mach.aeondb.LocalDiffMap@33ab4788
 
 scala> p2.now.toMap.get
 res2: Map[Int,String] = Map(3 -> c)

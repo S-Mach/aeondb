@@ -1,0 +1,11 @@
+import org.joda.time._
+import scala.concurrent._
+import s_mach.concurrent._
+import net.s_mach.aeondb._
+import net.s_mach.aeondb.impl._
+import scala.concurrent.ExecutionContext.Implicits.global
+implicit val m = Metadata("me")
+val t1 = Instant.now()
+Thread.sleep(1)
+val p = LocalDiffMap(1 -> "a",2 -> "b")
+val t2 = Instant.now()
