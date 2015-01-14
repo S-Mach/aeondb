@@ -12,5 +12,7 @@ AeonDB v0.1 is currently a prototype and does not fufill all of its proposed fea
 * Transactor ACI(+D) (v0.2)
 * Multiple key-value stores (v0.3)
 * Schema and schema-versioning (v0.3)
+* Embeddable (for Scala, Java or Python) (v0.4)
 * Stand-alone (v0.5)
-* Embeddable (for Scala, Java or Python) (v0.9)
+* SQL processor (v0.6)
+* Datalog processor (v0.7)
