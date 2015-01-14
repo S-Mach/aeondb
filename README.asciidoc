@@ -27,7 +27,6 @@ features. v0.1 implements the following features:
 * Embeddable (for Scala only) (v0.1)
 * Local transactions ACI(-D) (v0.1)
 * Time-ordered commit event stream (v0.1)
-* Time-bound transactions (v0.1) [In Progress]
 * Full history for any value (v0.1) [In Progress]
 
 Roadmap for planned feature support:
