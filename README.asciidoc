@@ -10,10 +10,9 @@ referentially transparent and allow retrieving any past state of any value.
 
 * Data is stored as a replicable time-ordered stream of commit events
 * Writing to "now" is non-transactional but thread-safe (see example 1 below)
-* Writing to "future" is transactional using optimistic write model similar to
-STM (see example 2 below)
 * Writing to "future" is transactional, idempotent and time-bound. Transaction
-must succeed or fail atomically by a user-supplied timestamp [In Progress]
+must succeed or fail atomically by a user-supplied timestamp [In Progress] (see
+example 2 below)
 * Use git-style checkout to rebase and copy a portion of the data and make local
 changes
 * Use git-style merge to replay commits to another LocalDiffMap (see example 3
