@@ -64,6 +64,8 @@ trait AeonMap[A,B,PB] {
     def aeon: Aeon
 
     def checkout() : Future[AeonMap[A,B,PB]]
+
+//    def oomCommit: Future[List[(Commit[A,B,PB],Metadata)]]
   }
 
   trait NowMoment extends OldMoment {

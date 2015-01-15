@@ -24,37 +24,25 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import org.scalatest.{FlatSpec, Matchers}
 import s_mach.concurrent._
 
-class AeonMapNowTest extends FlatSpec with Matchers {
+class AeonMapFutureTest extends FlatSpec with Matchers {
   implicit val metadata = Metadata(
     who = "test",
     why = Some("test")
   )
 
-  "AeonMap.now" must "convert toMap" in {
+  "AeonMapTest.future" must "put" in {
     val m = Map(1 -> "a", 2 -> "b")
     val p = AeonMap(m.toSeq:_*)
-    p.now.toMap.get should equal(m)
-  }
-
-  "AeonMap.now" must "find" in {
-    val m = Map(1 -> "a", 2 -> "b")
-    val p = AeonMap(m.toSeq:_*)
-    p.now.find(1).get should equal(Some("a"))
-    p.now.find(3).get should equal(None)
-  }
-
-  "AeonMap.now" must "put" in {
-    val m = Map(1 -> "a", 2 -> "b")
-    val p = AeonMap(m.toSeq:_*)
-    p.now.put(3,"c").get should equal(true)
-    p.now.put(3,"cc").get should equal(false)
+    p.future { f =>
+      f.put(3,"c").future
+    }.get should equal(true)
     p.now.toMap.get should equal(m + (3 -> "c"))
     p.zomCommit.get should equal(
       (CommitBuilder().put(3,"c").result()._2,metadata) ::
       Nil
     )
   }
-
+  
   "AeonMap.now" must "replace" in {
     val m = Map(1 -> "a", 2 -> "b")
     val p = AeonMap(m.toSeq:_*)
@@ -67,10 +55,12 @@ class AeonMapNowTest extends FlatSpec with Matchers {
     )
   }
 
-  "AeonMap.now" must "deactivate" in {
+  "AeonMap.future" must "deactivate" in {
     val m = Map(1 -> "a", 2 -> "b")
     val p = AeonMap(m.toSeq:_*)
-    p.now.deactivate(1).get should equal(true)
+    p.future { f =>
+      f.deactivate(1).future
+    }.get should equal(true)
     p.now.toMap.get should equal(m - 1)
     p.now.deactivate(1).get should equal(false)
     p.now.deactivate(3).get should equal(false)
@@ -80,12 +70,14 @@ class AeonMapNowTest extends FlatSpec with Matchers {
     )
   }
 
-  "AeonMap.now" must "reactivate" in {
+  "AeonMap.future" must "reactivate" in {
     val m = Map(1 -> "a", 2 -> "b")
     val p = AeonMap(m.toSeq:_*)
     p.now.deactivate(1).get should equal(true)
     p.now.toMap.get should equal(m - 1)
-    p.now.reactivate(1,"aa").get should equal(true)
+    p.future { f =>
+      f.reactivate(1,"aa").future
+    }.get should equal(true)
     p.now.toMap.get should equal(m - 1 +(1 -> "aa"))
     p.now.reactivate(1,"aaa").get should equal(false)
     p.now.reactivate(3,"c").get should equal(false)
@@ -96,4 +88,30 @@ class AeonMapNowTest extends FlatSpec with Matchers {
     )
   }
 
+  "AeonMap.future" must "allow combining all operations into one commit" in {
+    val m = Map(1 -> "a", 2 -> "b", 3 -> "c")
+    val p = AeonMap(m.toSeq:_*)
+    p.now.deactivate(1).get should equal(true)
+    p.now.toMap.get should equal(m - 1)
+    p.future { _
+        .put(4,"d")
+        .replace(3,"cc")
+        .deactivate(2)
+        .reactivate(1,"aa").future
+    }.get should equal(true)
+    p.now.toMap.get should equal(Map(1 -> "aa", 3 -> "cc", 4 -> "d"))
+    p.zomCommit.get should equal(
+      (
+        CommitBuilder()
+          .put(4,"d")
+          .replace(3,Some("cc"),1)
+          .deactivate(2,1)
+          .reactivate(1,"aa",2)
+          .result()._2,
+        metadata
+      ) ::
+      (CommitBuilder().deactivate(1,1).result()._2,metadata) ::
+      Nil
+    )
+  }
 }

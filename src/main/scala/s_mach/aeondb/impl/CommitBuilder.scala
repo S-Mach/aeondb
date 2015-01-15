@@ -42,16 +42,16 @@ class CommitBuilder[A,B,PB] {
 
   def replace(
     key: A,
-    version: Long,
-    patch: PB
+    patch: PB,
+    expectedVersion: Long
   ) = {
-    _checkout.+=((key,version))
+    _checkout.+=((key,expectedVersion))
     _replace.+=((key,patch))
     this
   }
 
-  def deactivate(key:A, version:Long) = {
-    _checkout.+=((key,version))
+  def deactivate(key:A, expectedVersion:Long) = {
+    _checkout.+=((key,expectedVersion))
     _deactivate += key
     this
   }
@@ -59,9 +59,9 @@ class CommitBuilder[A,B,PB] {
   def reactivate(
     key:A,
     value:B,
-    version:Long
+    expectedVersion:Long
   ) = {
-    _checkout.+=((key,version))
+    _checkout.+=((key,expectedVersion))
     _reactivate += ((key,value))
     this
   }

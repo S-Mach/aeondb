@@ -396,7 +396,7 @@ class AeonMapImpl[A,B,PB](
           } yield {
             val patch = oldValue calcDiff newValue
             val (checkout,commit) = CommitBuilder[A,B,PB]()
-              .replace(key,record.version,patch)
+              .replace(key,patch,record.version)
               .result()
 
             (checkout, (commit,metadata) :: Nil, x)
@@ -580,7 +580,7 @@ class AeonMapImpl[A,B,PB](
     ): FutureMoment = {
       val record = base.local.active(key)
       val patch = record.value calcDiff value
-      builder.replace(key,record.version,patch)
+      builder.replace(key,patch,record.version)
       this
     }
 
