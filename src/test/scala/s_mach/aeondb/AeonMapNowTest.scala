@@ -36,13 +36,6 @@ class AeonMapNowTest extends FlatSpec with Matchers {
     p.now.toMap.get should equal(m)
   }
 
-  "AeonMap.now" must "find" in {
-    val m = Map(1 -> "a", 2 -> "b")
-    val p = AeonMap(m.toSeq:_*)
-    p.now.find(1).get should equal(Some("a"))
-    p.now.find(3).get should equal(None)
-  }
-
   "AeonMap.now" must "put" in {
     val m = Map(1 -> "a", 2 -> "b")
     val p = AeonMap(m.toSeq:_*)
@@ -54,6 +47,7 @@ class AeonMapNowTest extends FlatSpec with Matchers {
       Nil
     )
   }
+  // TODO: putFold
 
   "AeonMap.now" must "replace" in {
     val m = Map(1 -> "a", 2 -> "b")
@@ -66,6 +60,7 @@ class AeonMapNowTest extends FlatSpec with Matchers {
       Nil
     )
   }
+  // TODO: replaceFold
 
   "AeonMap.now" must "deactivate" in {
     val m = Map(1 -> "a", 2 -> "b")
@@ -79,6 +74,7 @@ class AeonMapNowTest extends FlatSpec with Matchers {
       Nil
     )
   }
+  // TODO: deactivateFold
 
   "AeonMap.now" must "reactivate" in {
     val m = Map(1 -> "a", 2 -> "b")
@@ -95,5 +91,8 @@ class AeonMapNowTest extends FlatSpec with Matchers {
       Nil
     )
   }
+  // TODO: reactivateFold
 
+  // TODO: commit, commitFold
+  // TODO: merge, mergeFold
 }

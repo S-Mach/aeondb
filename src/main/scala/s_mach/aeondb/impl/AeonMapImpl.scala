@@ -26,24 +26,24 @@ import s_mach.datadiff._
 import org.joda.time.Instant
 import s_mach.aeondb._
 
-object AeonMapImpl {
-  def apply[A,B,PB](kv:(A,B)*)(implicit
-    ec: ExecutionContext,
-    dataDiff:DataDiff[B,PB]
-    ) : AeonMapImpl[A,B,PB] = {
-    val now = Instant.now()
-    new AeonMapImpl[A,B,PB](
-      _baseAeon = Aeon(now,now),
-      _baseState = MaterializedMoment(kv:_*),
-      zomBaseCommit = Nil
-    )
-  }
-}
+//object AeonMapImpl {
+//  def apply[A,B,PB](kv:(A,B)*)(implicit
+//    ec: ExecutionContext,
+//    dataDiff:DataDiff[B,PB]
+//    ) : AeonMapImpl[A,B,PB] = {
+//    val now = Instant.now()
+//    new AeonMapImpl[A,B,PB](
+//      _baseAeon = Aeon(now,now),
+//      _baseState = MaterializedMoment(kv:_*),
+//      zomBaseCommit = Nil
+//    )
+//  }
+//}
 
 class AeonMapImpl[A,B,PB](
-  _baseAeon: Aeon,
+  _baseAeon: Aeon = { val now = Instant.now; Aeon(now,now) },
   _baseState: MaterializedMoment[A,B] = MaterializedMoment.empty[A,B],
-  zomBaseCommit: List[(List[Commit[A,B,PB]],Metadata)]
+  zomBaseCommit: List[(List[Commit[A,B,PB]],Metadata)] = Nil
 )(implicit
   val executionContext: ExecutionContext,
   val dataDiff:DataDiff[B,PB]
@@ -84,7 +84,6 @@ class AeonMapImpl[A,B,PB](
         entry.getValue.oomCommit
       }
       .toList
-
   }.future
 
   trait OldMoment extends SuperOldMoment {
@@ -521,41 +520,18 @@ class AeonMapImpl[A,B,PB](
     override def checkout(): Future[AeonMapImpl[A,B,PB]] = oldMoment.checkout()
   }
 
-  def publishEvents() : Unit = {
-    def loop() : Unit ={
-      eventQueue.poll() match {
-        case e@OnCommit(_) =>
-          onEvent(e)
-          loop()
-        case _ =>
-      }
-    }
-    loop()
-  }
-  
   def compareAndSetNowMoment(
     lastEntry: java.util.Map.Entry[Long,OldMoment],
     nextMoment: LazyOldMoment
   ): Boolean = {
-    val isSuccess =
-      whenToOldState.synchronized {
-        if (lastEntry.getKey == whenToOldState.lastEntry.getKey) {
-          whenToOldState.put(nextMoment.aeon.end.getMillis, nextMoment)
-          if(emitEvents) {
-            eventQueue.offer(OnCommit(nextMoment.oomCommit))
-          }
-          true
-        } else {
-          false
-        }
+    whenToOldState.synchronized {
+      if (lastEntry.getKey == whenToOldState.lastEntry.getKey) {
+        whenToOldState.put(nextMoment.aeon.end.getMillis, nextMoment)
+        unsafeOnCommitHook(nextMoment.oomCommit)
+        true
+      } else {
+        false
       }
-    if (isSuccess) {
-      if(emitEvents) {
-        Future { publishEvents() }.background
-      }
-      true
-    } else {
-      false
     }
   }
   
@@ -617,5 +593,4 @@ class AeonMapImpl[A,B,PB](
     } yield result
   }
 
-  lazy val eventQueue = new ConcurrentLinkedQueue[Event[A,B,PB]]()
 }

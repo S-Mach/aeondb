@@ -44,13 +44,31 @@ object AeonMap {
   sealed trait PutError[+A] extends Error[A]
   case class KeyAlreadyExists[+A](key: A) extends PutError[A]
 
+  type EventHandler[A,B,PB] = Seq[Event[A,B,PB]] => Unit
+
   def apply[A,B,PB](
     kv: (A,B)*
   )(implicit
     dataDiff:DataDiff[B,PB],
     ec:ExecutionContext
   ) : AeonMap[A,B,PB] =
-    AeonMapImpl(kv:_*)
+    new AeonMapImpl(_baseState = MaterializedMoment(kv:_*))
+
+  def apply[A,B,PB](
+    oomSubscriber: EventHandler[A,B,PB]*
+  )(
+    kv: (A,B)*
+  )(implicit
+    dataDiff:DataDiff[B,PB],
+    ec:ExecutionContext
+  ) : AeonMap[A,B,PB] = {
+    val _oomSubscriber = oomSubscriber
+    new AeonMapImpl[A,B,PB](
+      _baseState = MaterializedMoment(kv:_*)
+    ) with EventPublishing[A,B,PB] {
+      override def oomSubscriber = _oomSubscriber
+    }
+  }
 }
 
 trait AeonMap[A,B,PB] {
@@ -135,6 +153,5 @@ trait AeonMap[A,B,PB] {
 
   def zomCommit: Future[List[(Commit[A,B,PB], Metadata)]]
 
-  protected def emitEvents : Boolean = false
-  protected def onEvent(e: AeonMap.Event[A,B,PB]) : Unit = { }
+  protected def unsafeOnCommitHook(oomCommit: List[(Commit[A,B,PB],Metadata)]) : Unit = { }
 }
