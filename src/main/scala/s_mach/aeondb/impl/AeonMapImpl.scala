@@ -77,13 +77,13 @@ class AeonMapImpl[A,B,PB](
   override def zomCommit: Future[List[(Commit[A,B,PB], Metadata)]] = {
     import scala.collection.JavaConverters._
     whenToOldState
-      .descendingMap()
       .entrySet.asScala
       .iterator
       .flatMap { entry =>
         entry.getValue.oomCommit
       }
       .toList
+      .reverse
   }.future
 
   trait OldMoment extends SuperOldMoment {
