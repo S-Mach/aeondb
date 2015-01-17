@@ -16,9 +16,9 @@
           .L1 1tt1ttt,,Li
             ...1LLLL...
 */
-package s_mach.aeondb
+package s_mach.aeondb.impl
 
-import scala.collection.immutable.{DefaultMap, AbstractMap}
+import scala.collection.immutable.{AbstractMap, DefaultMap}
 
 abstract class DelegatedMap[A,+B] extends AbstractMap[A,B] with DefaultMap[A,B] { self =>
   def delegate: Map[A,B]

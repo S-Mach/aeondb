@@ -16,7 +16,9 @@
           .L1 1tt1ttt,,Li
             ...1LLLL...
 */
-package s_mach.aeondb
+package s_mach.aeondb.impl
+
+import s_mach.aeondb.LocalProjection
 
 trait DelegatedUnionLocalProjection[A,+B] extends LocalProjection[A,B] { self =>
   def delegate1: Map[A,B]

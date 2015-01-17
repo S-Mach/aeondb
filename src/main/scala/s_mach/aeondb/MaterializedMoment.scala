@@ -18,7 +18,7 @@
 */
 package s_mach.aeondb
 
-import s_mach.aeondb.impl.LiftedLocalMoment
+import s_mach.aeondb.impl._
 
 trait MaterializedMoment[A,+B] extends LocalMoment[A,B] {
   override def filterKeys(f: (A) => Boolean): MaterializedMoment[A,B]
@@ -32,23 +32,6 @@ trait MaterializedMoment[A,+B] extends LocalMoment[A,B] {
 object MaterializedMoment {
   private[this] val _empty = MaterializedMomentImpl[Any,Nothing](Map.empty)
   def empty[A,B] = _empty.asInstanceOf[MaterializedMoment[A,B]]
-
-  case class MaterializedMomentImpl[A,B](
-    active: Map[A,Record.Materialized[B]],
-    inactive: Map[A,Record.Inactive] = Map.empty[A,Record.Inactive]
-  ) extends DelegatedLocalProjection[A,B] with
-    MaterializedMoment[A,B] {
-    val delegate = active.mapValues(_.value)
-    val all = new DelegatedUnionMap2[A,Record[B]] {
-      def delegate1 = active
-      def delegate2 = inactive
-    }
-    override def filterKeys(f: A => Boolean) =
-      MaterializedMomentImpl(
-        active = active.filterKeys(f),
-        inactive = inactive.filterKeys(f)
-      )
-  }
 
   def apply[A,B](kv: (A,B)*) : MaterializedMoment[A,B] =
     MaterializedMomentImpl[A,B](

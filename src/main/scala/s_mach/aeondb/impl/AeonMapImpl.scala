@@ -50,6 +50,8 @@ class AeonMapImpl[A,B,PB](
 ) extends AeonMap[A,B,PB] { self =>
   import AeonMap._
 
+  protected def unsafeOnCommitHook(oomCommit: List[(Commit[A,B,PB],Metadata)]) : Unit = { }
+
   override val base = BaseMomentImpl[A,B,PB](
     aeonMap = this,
     aeon = _baseAeon,

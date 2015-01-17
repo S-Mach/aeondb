@@ -16,25 +16,15 @@
           .L1 1tt1ttt,,Li
             ...1LLLL...
 */
-package s_mach.aeondb
+package s_mach.aeondb.impl
 
-trait DelegatedLocalProjection[A,+B] extends LocalProjection[A,B] { self =>
-  def delegate: Map[A,B]
+import s_mach.aeondb.Projection
+
+trait DelegatedProjection[A,+B] extends Projection[A,B] {
+  def delegate: Projection[A,B]
 
   override def size = delegate.size
   override def keys = delegate.keys
-  override def find(key: A) = delegate.get(key)
-  override def toMap = delegate
+  override def find(key: A) = delegate.find(key)
+  override def toMap = delegate.toMap
 }
-
-object DelegatedLocalProjection {
-  case class DelegatedLocalProjectionImpl[A,B](
-    delegate: Map[A,B]
-  ) extends DelegatedLocalProjection[A,B] {
-    override def filterKeys(f: (A) => Boolean) =
-      DelegatedLocalProjection(delegate.filterKeys(f))
-  }
-  def apply[A,B](delegate: Map[A,B]) : DelegatedLocalProjection[A,B] =
-    DelegatedLocalProjectionImpl(delegate)
-}
-

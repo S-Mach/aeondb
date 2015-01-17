@@ -24,7 +24,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import org.scalatest.{FlatSpec, Matchers}
 import s_mach.concurrent._
 
-class EventPublishingTest extends FlatSpec with Matchers {
+class EventPublishingImplTest extends FlatSpec with Matchers {
   implicit val metadata = Metadata(
     who = "test",
     why = Some("test")

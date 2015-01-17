@@ -19,10 +19,26 @@
 package s_mach.aeondb
 
 import org.joda.time.Instant
-import s_mach.aeondb.impl.{EventPublishing, AeonMapImpl}
+import s_mach.aeondb.impl.{EventPublishingImpl, AeonMapImpl}
 import s_mach.datadiff.DataDiff
 import scala.concurrent.{ExecutionContext, Future}
 import s_mach.aeondb.internal._
+
+trait AeonMap[A,B,PB] {
+  implicit def executionContext: ExecutionContext
+  implicit def dataDiff: DataDiff[B,PB]
+
+  val NoOldMoment : OldMoment[A,B,PB]
+
+  def base : OldMoment[A,B,PB]
+  def old(when: Instant) : OldMoment[A,B,PB]
+  def now : NowMoment[A,B,PB]
+  def future(
+    f: FutureMoment[A,B,PB] => Future[FutureMoment[A,B,PB]]
+  )(implicit metadata:Metadata) : Future[Boolean]
+
+  def zomCommit: Future[List[(Commit[A,B,PB], Metadata)]]
+}
 
 object AeonMap {
   def apply[A,B,PB](
@@ -44,7 +60,7 @@ object AeonMap {
     val _oomSubscriber = oomSubscriber
     new AeonMapImpl[A,B,PB](
       _baseState = MaterializedMoment(kv:_*)
-    ) with EventPublishing[A,B,PB] {
+    ) with EventPublishingImpl[A,B,PB] {
       override def oomSubscriber = _oomSubscriber
     }
   }
@@ -77,20 +93,3 @@ object AeonMap {
 //  }
 }
 
-trait AeonMap[A,B,PB] {
-  implicit def executionContext: ExecutionContext
-  implicit def dataDiff: DataDiff[B,PB]
-
-  val NoOldMoment : OldMoment[A,B,PB]
-
-  def base : OldMoment[A,B,PB]
-  def old(when: Instant) : OldMoment[A,B,PB]
-  def now : NowMoment[A,B,PB]
-  def future(
-    f: FutureMoment[A,B,PB] => Future[FutureMoment[A,B,PB]]
-  )(implicit metadata:Metadata) : Future[Boolean]
-
-  def zomCommit: Future[List[(Commit[A,B,PB], Metadata)]]
-
-  protected def unsafeOnCommitHook(oomCommit: List[(Commit[A,B,PB],Metadata)]) : Unit = { }
-}

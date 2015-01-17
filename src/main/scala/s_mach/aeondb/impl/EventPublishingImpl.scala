@@ -7,7 +7,7 @@ import s_mach.concurrent._
 import s_mach.aeondb.internal._
 import s_mach.aeondb.{AeonMap, Commit, Metadata}
 
-trait EventPublishing[A,B,PB] extends AeonMap[A,B,PB] {
+trait EventPublishingImpl[A,B,PB] extends AeonMapImpl[A,B,PB] {
   
   implicit def executionContext:ExecutionContext
   def oomSubscriber: Traversable[EventHandler[A,B,PB]]
