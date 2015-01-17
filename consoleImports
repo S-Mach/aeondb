@@ -5,7 +5,7 @@ import s_mach.aeondb._
 import s_mach.aeondb.impl._
 import scala.concurrent.ExecutionContext.Implicits.global
 implicit val m = Metadata("me")
-val t1 = Instant.now()
+val t0 = Instant.now()
 Thread.sleep(1)
-val p = LocalDiffMap(1 -> "a",2 -> "b")
-val t2 = Instant.now()
+val p = AeonMap(1 -> "a",2 -> "b")
+val t1 = Instant.now()

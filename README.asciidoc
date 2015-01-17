@@ -133,26 +133,22 @@ t1: org.joda.time.Instant = 2015-01-04T06:00:07.108Z
 scala> :paste
 // Entering paste mode (ctrl-D to finish)
 
-val f = p.future
-val result = {
+val result = p.future { f =>
   for {
     oa <- f.find(1)
-    result <- {
-      f.replace(1,oa.get + "b")
-      f.put(3,"c")
-      f.commit()
-    }
-  } yield result
+  } yield {
+    f.replace(1,oa.get + "b")
+    f.put(3,"c")
+  }
 }
 
 
 // Exiting paste mode, now interpreting.
 
-f: p.FutureStateEx = FutureStateEx(BaseOldState(Map(1 -> Record(a,1), 2 -> Record(b,1)),Map(),Metadata(me,None,2015-01-04T06:00:05.886Z)))
-result: scala.concurrent.Future[Boolean] = scala.concurrent.impl.Promise$DefaultPromise@1c9aa4d4
+result: scala.concurrent.Future[Boolean] = scala.concurrent.impl.Promise$DefaultPromise@2f0d8680
 
 scala> result.get
-res0: Boolean = true
+res1: Boolean = true
 
 scala> p.now.toMap.get
 res1: Map[Int,String] = Map(2 -> b, 1 -> ab, 3 -> c)
@@ -183,8 +179,8 @@ res0: Boolean = true
 scala> p.now.toMap.get
 res1: Map[Int,String] = Map(2 -> b, 1 -> a, 3 -> c)
 
-scala> val p2 = p.now.checkout(_ == 3).get
-p2: s_mach.aeondb.PersistentMap[Int,String,Option[String]] = s_mach.aeondb.AeonMap@33ab4788
+scala> val p2 = p.now.filterKeys(_ == 3).checkout().get
+p2: s_mach.aeondb.AeonMap[Int,String,Option[String]] = s_mach.aeondb.impl.AeonMapImpl@1e50561f
 
 scala> p2.now.toMap.get
 res2: Map[Int,String] = Map(3 -> c)
