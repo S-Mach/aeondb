@@ -18,7 +18,6 @@
 */
 package s_mach.aeondb
 
-import s_mach.aeondb.AeonMap.{OnCommit, EventHandler}
 import s_mach.aeondb.impl.CommitBuilder
 import scala.collection.mutable
 import scala.concurrent.ExecutionContext.Implicits.global
